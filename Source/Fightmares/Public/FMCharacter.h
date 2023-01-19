@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputSubsystems.h"
 #include "FMCharacter.generated.h"
-
-class UInputAction;
 
 UCLASS()
 class FIGHTMARES_API AFMCharacter : public ACharacter
@@ -31,8 +31,18 @@ public:
 
 protected:
 	virtual void Move(const FInputActionInstance& Instance);
+	virtual void Interact(const FInputActionInstance& Instance);
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+	float MovementInputScalar = 1;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TSoftObjectPtr<UInputMappingContext> InputMapping;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* MoveInputAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* InteractInputAction;
 };

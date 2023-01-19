@@ -2,6 +2,8 @@
 
 #include "Fightmares/Public/FMCharacter.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AFMCharacter::AFMCharacter()
 {
@@ -29,18 +31,41 @@ void AFMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
+	if (const ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->Player))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (!InputMapping.IsNull())
+			{
+				InputSystem->AddMappingContext(InputMapping.LoadSynchronous(), 100);
+			}
+		}
+	}
+
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	// You can bind to any of the trigger events here by changing the "ETriggerEvent" enum value
+	
 	Input->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::Move);
+	Input->BindAction(InteractInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::Interact);
 }
 
 void AFMCharacter::Move(const FInputActionInstance& Instance)
 {
-	// Get X input
-	const FVector Direction = Instance.GetValue().Get<FVector>();
+	FVector Direction = Instance.GetValue().Get<FVector>();
+	Direction.Y = -Direction.Y;
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("eyo we do be schmooving: %s"), *Direction.ToString()));
+	} 
 
 	// Move character
-	AddMovementInput(Direction, 1);
+	AddMovementInput(Direction, MovementInputScalar);
+	
+}
+
+void AFMCharacter::Interact(const FInputActionInstance& Instance)
+{
+	
 }
 
 
