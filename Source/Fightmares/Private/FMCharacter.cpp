@@ -2,6 +2,7 @@
 
 #include "Fightmares/Public/FMCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -45,19 +46,23 @@ void AFMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	
 	Input->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::Move);
+	Input->BindAction(SprintInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::OnSprintActionTriggered);
+	Input->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &AFMCharacter::OnSprintActionCompleted);
 	Input->BindAction(InteractInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::Interact);
 }
 
 void AFMCharacter::Move(const FInputActionInstance& Instance)
 {
+	// TODO: Implement
+	uint8 bIsInBed = false;
+	if (bIsInBed)
+	{
+		return;
+	}
+	
 	FVector Direction = Instance.GetValue().Get<FVector>();
 	Direction.Y = -Direction.Y;
 	
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("eyo we do be schmooving: %s"), *Direction.ToString()));
-	} 
-
 	// Move character
 	AddMovementInput(Direction, MovementInputScalar);
 	
@@ -66,6 +71,27 @@ void AFMCharacter::Move(const FInputActionInstance& Instance)
 void AFMCharacter::Interact(const FInputActionInstance& Instance)
 {
 	
+}
+
+void AFMCharacter::OnSprintActionTriggered(const FInputActionInstance& Instance)
+{
+	if (bSprinting)
+	{
+		return;
+	}
+	OldMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = MaxSprintSpeed;
+	bSprinting = true;
+}
+
+void AFMCharacter::OnSprintActionCompleted(const FInputActionInstance& Instance)
+{
+	if (!bSprinting)
+	{
+		return;
+	}
+	bSprinting = false;
+	GetCharacterMovement()->MaxWalkSpeed = OldMaxWalkSpeed;
 }
 
 

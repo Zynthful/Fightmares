@@ -33,9 +33,21 @@ protected:
 	virtual void Move(const FInputActionInstance& Instance);
 	virtual void Interact(const FInputActionInstance& Instance);
 
+	virtual void OnSprintActionTriggered(const FInputActionInstance& Instance);
+	virtual void OnSprintActionCompleted(const FInputActionInstance& Instance);
+
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character Movement: Sprinting")
+	float MaxSprintSpeed = 1000;
+
+	float OldMaxWalkSpeed;
+
+	// Input Settings
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
 	float MovementInputScalar = 1;
+
+	// Enhanced Input System
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
@@ -44,5 +56,12 @@ protected:
 	UInputAction* MoveInputAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* SprintInputAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* InteractInputAction;
+
+private:
+	uint8 bSprinting;
+	
 };
