@@ -70,5 +70,8 @@ Saved/*
 Intermediate/*
 Plugins/*/Intermediate/*
 
+# Don't ignore .dll files
+!Plugins/Developer/**/*.dll
+
 # Cache files for the editor to use
 DerivedDataCache/*
