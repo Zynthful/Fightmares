@@ -45,7 +45,7 @@
 SourceArt/**/*.png
 SourceArt/**/*.tga
 
-# Binary Files
+# Plugins and Binaries Files
 Binaries/*
 Plugins/**/Binaries/*
 Plugins/**/Intermediate/*
