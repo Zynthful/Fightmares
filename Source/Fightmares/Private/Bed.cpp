@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Bed.h"
+
+#include "BedData.h"
+#include "FMCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABed::ABed()
@@ -18,24 +21,53 @@ void ABed::BeginPlay()
 	
 }
 
-void ABed::OnBeginInteract()
+void ABed::Rest(AFMCharacter* TargetCharacter)
 {
-	IInteractable::OnBeginInteract();
+	// put target in bed
+	OccupyingCharacters.Add(TargetCharacter);
+
+	// build 'rest' meter
+	GetWorldTimerManager().SetTimer(RestingTimerHandle, BedData->GetRestRecoveryTickRate(), true, BedData->GetRestRecoveryInitialDelay());
 }
 
-void ABed::OnInteract()
+void ABed::StopResting(AFMCharacter* TargetCharacter)
 {
-	IInteractable::OnInteract();
+	// take target out of bed
+	OccupyingCharacters.Remove(TargetCharacter);
+	
+	// stop building 'rest' meter
+	GetWorldTimerManager().ClearTimer(RestingTimerHandle);
 }
 
-FOnBeginInteract ABed::GetOnBeginInteractDelegate()
+void ABed::OnRestTick(AFMCharacter& Character) const
 {
-	return OnBeginInteractDelegate;
+	Character.RecoverRest(BedData->GetRestRecoveryTickAmount());
 }
 
-FOnInteract ABed::GetOnInteractDelegate()
+void ABed::DoTapInteract()
 {
-	return OnInteractDelegate;
+	IInteractable::DoTapInteract();
+	if (AFMCharacter* PlayerCharacter = Cast<AFMCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+	{
+		if (OccupyingCharacters.Contains(PlayerCharacter))
+		{
+			StopResting(PlayerCharacter);
+		}
+		else
+		{
+			Rest(PlayerCharacter);
+		}
+	}
+}
+
+void ABed::BeginHoldInteract()
+{
+	IInteractable::BeginHoldInteract();
+}
+
+void ABed::DoHoldInteract()
+{
+	IInteractable::DoHoldInteract();
 }
 
 // Called every frame

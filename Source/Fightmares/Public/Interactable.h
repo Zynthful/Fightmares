@@ -4,9 +4,6 @@
 
 #include "Interactable.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeginInteract);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteract);
-
 /**
  * 
  */
@@ -21,14 +18,17 @@ class IInteractable
 	GENERATED_BODY()
 
 protected:
-	//UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnBeginInteract"), Category = "Interaction")
-	UFUNCTION()
-	virtual void OnBeginInteract();
+	virtual void DoTapInteract();
 	
-	//UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnInteract"), Category = "Interaction")
-	UFUNCTION()
-	virtual void OnInteract();
+	virtual void BeginHoldInteract();
+	virtual void DoHoldInteract();
+	
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDoTapInteract"), Category = "Interaction")
+	void OnDoTapInteract();
 
-	virtual FOnBeginInteract GetOnBeginInteractDelegate() = 0;
-	virtual FOnInteract GetOnInteractDelegate() = 0;
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnBeginHoldInteract"), Category = "Interaction")
+	void OnBeginHoldInteract();
+	
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDoHoldInteract"), Category = "Interaction")
+	void OnDoHoldInteract();
 };

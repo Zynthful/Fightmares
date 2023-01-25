@@ -1,14 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Interactable.h"
 
-void IInteractable::OnBeginInteract()
+void IInteractable::DoTapInteract()
 {
-	GetOnBeginInteractDelegate().Broadcast();
+	OnDoTapInteract();
 }
 
-void IInteractable::OnInteract()
+void IInteractable::BeginHoldInteract()
 {
-	GetOnInteractDelegate().Broadcast();
+	OnBeginHoldInteract();
+}
+
+void IInteractable::DoHoldInteract()
+{
+	OnDoHoldInteract();
 }

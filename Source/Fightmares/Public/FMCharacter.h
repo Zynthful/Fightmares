@@ -17,19 +17,20 @@ class FIGHTMARES_API AFMCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AFMCharacter();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void SetRest(const float& Value);
+	virtual void RecoverRest(const float& Value);
+
 protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
 	virtual void Move(const FInputActionInstance& Instance);
 	virtual void Interact(const FInputActionInstance& Instance);
 
@@ -37,6 +38,9 @@ protected:
 	virtual void OnSprintActionCompleted(const FInputActionInstance& Instance);
 
 protected:
+
+	// Character Movement
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character Movement: Sprinting")
 	float MaxSprintSpeed = 1000;
 
@@ -61,7 +65,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* InteractInputAction;
 
+	// Rest
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rest")
+	float Rest;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rest")
+	float MaxRest;
+
 private:
-	uint8 bSprinting;
+	uint8 bSprinting : 1;
 	
 };

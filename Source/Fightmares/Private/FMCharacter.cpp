@@ -51,6 +51,16 @@ void AFMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Input->BindAction(InteractInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::Interact);
 }
 
+void AFMCharacter::SetRest(const float& Value)
+{
+	Rest = FMath::Min(Value, MaxRest);
+}
+
+void AFMCharacter::RecoverRest(const float& Value)
+{
+	SetRest(Rest + Value);
+}
+
 void AFMCharacter::Move(const FInputActionInstance& Instance)
 {
 	// TODO: Implement
