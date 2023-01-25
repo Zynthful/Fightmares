@@ -44,6 +44,11 @@ void ABed::OnRestTick(AFMCharacter& Character) const
 	Character.RecoverRest(BedData->GetRestRecoveryTickAmount());
 }
 
+FInteractableData& ABed::GetData()
+{
+	return InteractableData;
+}
+
 void ABed::DoTapInteract()
 {
 	IInteractable::DoTapInteract();

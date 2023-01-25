@@ -31,6 +31,8 @@ protected:
 	virtual void OnRestTick(AFMCharacter& Character) const;
 
 	// Start IInteractable overrides
+public:
+	virtual FInteractableData& GetData() override;
 protected:
 	virtual void DoTapInteract() override;
 	virtual void BeginHoldInteract() override;
@@ -50,4 +52,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AFMCharacter*> OccupyingCharacters;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	FInteractableData InteractableData;
 };

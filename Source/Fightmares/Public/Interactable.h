@@ -4,6 +4,15 @@
 
 #include "Interactable.generated.h"
 
+USTRUCT(BlueprintType)
+struct FInteractableData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	float MaxDistance = 25.0f;
+};
+
 /**
  * 
  */
@@ -16,6 +25,9 @@ class UInteractable : public UInterface
 class IInteractable
 {
 	GENERATED_BODY()
+
+public:
+	virtual FInteractableData& GetData() = 0;
 
 protected:
 	virtual void DoTapInteract();

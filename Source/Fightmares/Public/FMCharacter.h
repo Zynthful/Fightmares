@@ -37,6 +37,8 @@ protected:
 	virtual void OnSprintActionTriggered(const FInputActionInstance& Instance);
 	virtual void OnSprintActionCompleted(const FInputActionInstance& Instance);
 
+	UFUNCTION(BlueprintCallable)
+	virtual AActor* GetBestInteractable() const;
 protected:
 
 	// Character Movement
@@ -72,6 +74,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rest")
 	float MaxRest;
+
+	// Interaction
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Interaction")
+	float InteractRadius = 25.0f;
 
 private:
 	uint8 bSprinting : 1;

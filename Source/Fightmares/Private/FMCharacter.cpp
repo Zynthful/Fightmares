@@ -2,6 +2,8 @@
 
 #include "Fightmares/Public/FMCharacter.h"
 
+#include "Interactable.h"
+#include "Algo/Rotate.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -102,6 +104,30 @@ void AFMCharacter::OnSprintActionCompleted(const FInputActionInstance& Instance)
 	}
 	bSprinting = false;
 	GetCharacterMovement()->MaxWalkSpeed = OldMaxWalkSpeed;
+}
+
+AActor* AFMCharacter::GetBestInteractable() const
+{
+	TArray<FHitResult> Hits;
+	const FQuat Rotation = FQuat(0, 0, 0, 0);
+	const FCollisionShape Shape = FCollisionShape::MakeSphere(InteractRadius);
+	const FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
+	const FCollisionResponseParams ResponseParams = FCollisionResponseParams::DefaultResponseParam;
+	GetWorld()->SweepMultiByChannel(Hits, GetActorLocation(), GetActorLocation(), Rotation, ECC_Visibility, Shape, QueryParams, ResponseParams);
+
+	AActor* BestInteractableActor = nullptr;
+	for (FHitResult Hit : Hits)
+	{
+		if (IInteractable* Interactable = Cast<IInteractable>(Hit.GetActor()))
+		{
+			if (!BestInteractableActor || Hit.GetActor()->GetDistanceTo(this) < BestInteractableActor->GetDistanceTo(this))
+			{
+				BestInteractableActor = Hit.GetActor();
+			}
+		}
+	}
+	
+	return BestInteractableActor;
 }
 
 
