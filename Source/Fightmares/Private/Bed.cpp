@@ -4,6 +4,7 @@
 
 #include "BedData.h"
 #include "FMCharacter.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -12,6 +13,14 @@ ABed::ABed()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	DefaultRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultRoot"));
+	SetRootComponent(DefaultRoot);
+	
+	TapButtonPromptWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Tap Button Prompt Widget Component"));
+    const FAttachmentTransformRules Rules = FAttachmentTransformRules::KeepRelativeTransform;
+	TapButtonPromptWidget->AttachToComponent(DefaultRoot, Rules, TEXT("hello"));
+	TapButtonPromptWidget->SetVisibility(false);
+	
 }
 
 // Called when the game starts or when spawned
@@ -49,9 +58,25 @@ FInteractableData& ABed::GetData()
 	return InteractableData;
 }
 
+UWidgetComponent* ABed::GetTapButtonPromptWidget()
+{
+	return TapButtonPromptWidget;
+}
+
 void ABed::DoTapInteract()
 {
 	IInteractable::DoTapInteract();
+
+	// On tap interact, we do a big ol jump
+
+	if (AFMCharacter* PlayerCharacter = Cast<AFMCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
+	{
+		PlayerCharacter->Jump();
+	}
+
+	
+	// OLD - NO RESTING ANYMORE : (
+	/*
 	if (AFMCharacter* PlayerCharacter = Cast<AFMCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)))
 	{
 		if (OccupyingCharacters.Contains(PlayerCharacter))
@@ -63,6 +88,7 @@ void ABed::DoTapInteract()
 			Rest(PlayerCharacter);
 		}
 	}
+	*/
 }
 
 void ABed::BeginHoldInteract()
