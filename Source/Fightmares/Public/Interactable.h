@@ -4,6 +4,8 @@
 
 #include "Interactable.generated.h"
 
+class UWidgetComponent;
+
 USTRUCT(BlueprintType)
 struct FInteractableData
 {
@@ -28,12 +30,13 @@ class IInteractable
 
 public:
 	virtual FInteractableData& GetData() = 0;
+	virtual UWidgetComponent* GetTapButtonPromptWidget() = 0;
 
-protected:
 	virtual void DoTapInteract();
-	
 	virtual void BeginHoldInteract();
 	virtual void DoHoldInteract();
+
+protected:
 	
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDoTapInteract"), Category = "Interaction")
 	void OnDoTapInteract();

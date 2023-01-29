@@ -4,6 +4,7 @@
 
 #include "Interactable.h"
 #include "Algo/Rotate.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -27,6 +28,23 @@ void AFMCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (AActor* InteractableActor = GetBestInteractableActor(FindInteractableActors()))
+	{
+		if (IInteractable* Interactable = Cast<IInteractable>(InteractableActor))
+		{
+			if (Interactable != CurrentInteractable)
+			{
+				Interactable->GetTapButtonPromptWidget()->SetVisibility(true);
+				CurrentInteractable = Interactable;
+			}
+		}
+	}
+	else if (CurrentInteractable != nullptr)
+	{
+		CurrentInteractable->GetTapButtonPromptWidget()->SetVisibility(false);
+		CurrentInteractable = nullptr;
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -65,24 +83,16 @@ void AFMCharacter::RecoverRest(const float& Value)
 
 void AFMCharacter::Move(const FInputActionInstance& Instance)
 {
-	// TODO: Implement
-	uint8 bIsInBed = false;
-	if (bIsInBed)
-	{
-		return;
-	}
-	
 	FVector Direction = Instance.GetValue().Get<FVector>();
 	Direction.Y = -Direction.Y;
 	
 	// Move character
 	AddMovementInput(Direction, MovementInputScalar);
-	
 }
 
 void AFMCharacter::Interact(const FInputActionInstance& Instance)
 {
-	
+	OnTapInteract();
 }
 
 void AFMCharacter::OnSprintActionTriggered(const FInputActionInstance& Instance)
@@ -106,28 +116,67 @@ void AFMCharacter::OnSprintActionCompleted(const FInputActionInstance& Instance)
 	GetCharacterMovement()->MaxWalkSpeed = OldMaxWalkSpeed;
 }
 
-AActor* AFMCharacter::GetBestInteractable() const
+TArray<AActor*> AFMCharacter::FindInteractableActors()
 {
 	TArray<FHitResult> Hits;
-	const FQuat Rotation = FQuat(0, 0, 0, 0);
+	const FVector Start = GetActorLocation();
+	const FVector End = GetActorLocation();
+	const FQuat Rotation = FQuat::Identity;
+	const ECollisionChannel CollisionChannel = ECC_WorldDynamic;
 	const FCollisionShape Shape = FCollisionShape::MakeSphere(InteractRadius);
 	const FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
 	const FCollisionResponseParams ResponseParams = FCollisionResponseParams::DefaultResponseParam;
-	GetWorld()->SweepMultiByChannel(Hits, GetActorLocation(), GetActorLocation(), Rotation, ECC_Visibility, Shape, QueryParams, ResponseParams);
+	GetWorld()->SweepMultiByChannel(Hits, Start, End, Rotation, CollisionChannel, Shape, QueryParams, ResponseParams);
+	//DrawDebugSphere(GetWorld(), Start, Shape.GetSphereRadius(), InteractRadius, FColor::Purple, false, 0.5f);
 
-	AActor* BestInteractableActor = nullptr;
-	for (FHitResult Hit : Hits)
+	TArray<AActor*> InteractableActors;
+	int Count = Hits.Num();
+	for (int Index = 0; Index < Count; Index++)
 	{
-		if (IInteractable* Interactable = Cast<IInteractable>(Hit.GetActor()))
+		AActor* Actor = Hits[Index].GetActor();
+		if (Cast<IInteractable>(Actor))
 		{
-			if (!BestInteractableActor || Hit.GetActor()->GetDistanceTo(this) < BestInteractableActor->GetDistanceTo(this))
-			{
-				BestInteractableActor = Hit.GetActor();
-			}
+			InteractableActors.Add(Actor);
 		}
 	}
 	
+	return InteractableActors;
+}
+
+AActor* AFMCharacter::GetBestInteractableActor(const TArray<AActor*>& Actors)
+{
+	AActor* BestInteractableActor = nullptr;
+	for (AActor* Actor : Actors)
+	{
+		if (IInteractable* Interactable = Cast<IInteractable>(Actor))
+		{
+			if (!BestInteractableActor || Actor->GetDistanceTo(this) < BestInteractableActor->GetDistanceTo(this))
+			{
+				BestInteractableActor = Actor;
+			}
+		}
+	}
 	return BestInteractableActor;
+}
+
+void AFMCharacter::OnTapInteract()
+{
+	if (CurrentInteractable == nullptr)
+	{
+		return;
+	}
+	
+	CurrentInteractable->DoTapInteract();
+}
+
+void AFMCharacter::OnHoldInteract()
+{
+	if (CurrentInteractable == nullptr)
+	{
+		return;
+	}
+	
+	CurrentInteractable->DoHoldInteract();
 }
 
 

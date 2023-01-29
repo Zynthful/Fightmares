@@ -4,15 +4,24 @@
 
 void IInteractable::DoTapInteract()
 {
-	OnDoTapInteract();
+	if (UObject* ThisObject = Cast<UObject>(this))
+	{
+		Execute_OnDoTapInteract(ThisObject);
+	}
 }
 
 void IInteractable::BeginHoldInteract()
 {
-	OnBeginHoldInteract();
+	if (UObject* ThisObject = Cast<UObject>(this))
+	{
+		Execute_OnBeginHoldInteract(ThisObject);
+	}
 }
 
 void IInteractable::DoHoldInteract()
 {
-	OnDoHoldInteract();
+	if (UObject* ThisObject = Cast<UObject>(this))
+	{
+		Execute_OnDoHoldInteract(ThisObject);
+	}
 }

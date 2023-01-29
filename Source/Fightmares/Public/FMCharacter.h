@@ -7,10 +7,13 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
+#include "InteractingActor.h"
 #include "FMCharacter.generated.h"
 
+class IInteractable;
+
 UCLASS()
-class FIGHTMARES_API AFMCharacter : public ACharacter
+class FIGHTMARES_API AFMCharacter : public ACharacter, public IInteractingActor
 {
 	GENERATED_BODY()
 
@@ -37,8 +40,14 @@ protected:
 	virtual void OnSprintActionTriggered(const FInputActionInstance& Instance);
 	virtual void OnSprintActionCompleted(const FInputActionInstance& Instance);
 
-	UFUNCTION(BlueprintCallable)
-	virtual AActor* GetBestInteractable() const;
+	// Start IInteractingActor overrides
+protected:
+	virtual TArray<AActor*> FindInteractableActors() override;
+	//virtual TArray<AActor*> SortInteractableActors(const TArray<AActor*>& Actors) override;
+	virtual AActor* GetBestInteractableActor(const TArray<AActor*>& Actors) override;
+	virtual void OnTapInteract() override;
+	virtual void OnHoldInteract() override;
+	// End IInteractingActor overrides
 protected:
 
 	// Character Movement
@@ -82,5 +91,6 @@ protected:
 
 private:
 	uint8 bSprinting : 1;
+	IInteractable* CurrentInteractable;
 	
 };

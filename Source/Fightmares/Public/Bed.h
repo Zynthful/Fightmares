@@ -33,6 +33,7 @@ protected:
 	// Start IInteractable overrides
 public:
 	virtual FInteractableData& GetData() override;
+	virtual UWidgetComponent* GetTapButtonPromptWidget() override;
 protected:
 	virtual void DoTapInteract() override;
 	virtual void BeginHoldInteract() override;
@@ -55,4 +56,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	FInteractableData InteractableData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	UWidgetComponent* TapButtonPromptWidget;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* DefaultRoot = nullptr;
 };
