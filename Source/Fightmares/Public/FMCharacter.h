@@ -36,6 +36,7 @@ protected:
 	
 	virtual void Move(const FInputActionInstance& Instance);
 	virtual void Interact(const FInputActionInstance& Instance);
+	virtual void SwingNet(const FInputActionInstance& Instance);
 
 	virtual void OnSprintActionTriggered(const FInputActionInstance& Instance);
 	virtual void OnSprintActionCompleted(const FInputActionInstance& Instance);
@@ -75,6 +76,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* InteractInputAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* SwingNetInputAction;
 
 	// Rest
 

@@ -69,6 +69,7 @@ void AFMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Input->BindAction(SprintInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::OnSprintActionTriggered);
 	Input->BindAction(SprintInputAction, ETriggerEvent::Completed, this, &AFMCharacter::OnSprintActionCompleted);
 	Input->BindAction(InteractInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::Interact);
+	Input->BindAction(SwingNetInputAction, ETriggerEvent::Triggered, this, &AFMCharacter::SwingNet);
 }
 
 void AFMCharacter::SetRest(const float& Value)
@@ -93,6 +94,11 @@ void AFMCharacter::Move(const FInputActionInstance& Instance)
 void AFMCharacter::Interact(const FInputActionInstance& Instance)
 {
 	OnTapInteract();
+}
+
+void AFMCharacter::SwingNet(const FInputActionInstance& Instance)
+{
+	
 }
 
 void AFMCharacter::OnSprintActionTriggered(const FInputActionInstance& Instance)
